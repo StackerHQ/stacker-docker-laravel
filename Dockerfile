@@ -25,7 +25,7 @@ RUN apt-get install -y --allow-unauthenticated php7.1-fpm php7.1-cli php7.1-dev 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 COPY rootfs/ /
-WORKDIR /root
+WORKDIR /app
 
 ENTRYPOINT ["/app-entrypoint.sh"]
 CMD ["zsh"]
