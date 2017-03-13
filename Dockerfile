@@ -1,3 +1,6 @@
+## TODO clear php build files
+## TODO remove *-dev packages after build
+
 FROM php:apache
 
 RUN apt-get update && apt-get install -y \
@@ -17,13 +20,9 @@ RUN apt-get update && apt-get install -y \
       pdo_pgsql \
       pgsql \
       zip \
-      opcache \
- && a2enmod rewrite
+      opcache
 
-## TODO clear php build files
-## TODO remove *-dev packages after build
-
-# install composer
+# Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Install nodejs
@@ -32,5 +31,18 @@ RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - \
  && npm update -g npm \
  && npm install -g gulp
 
+# Get Laravel source
+RUN mkdir /tmp/app \
+ && cd /tmp/app \
+ && composer create-project "laravel/laravel=5.2.31" /tmp/app --prefer-dist
+
 COPY rootfs/ /
+
+RUN a2enmod rewrite \
+ && a2dissite 000-default \
+ && a2ensite app
+
 WORKDIR /app
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/start.sh"]
